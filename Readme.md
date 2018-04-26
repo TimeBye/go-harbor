@@ -1,12 +1,8 @@
 # go-harbor
 
-A Harbor API client enabling Go programs to interact with GitLab in a simple and uniform way
+A Harbor API client enabling Go programs to interact with Harbor in a simple and uniform way
 
 [![GitHub license](https://img.shields.io/github/license/TimeBye/go-harbor.svg)](https://github.com/TimeBye/go-harbor/blob/master/LICENSE)
-[![Sourcegraph](https://sourcegraph.com/github.com/TimeBye/go-harbor/-/badge.svg)](https://sourcegraph.com/github.com/TimeBye/go-harbor?badge)
-[![GoDoc](https://godoc.org/github.com/TimeBye/go-harbor?status.svg)](https://godoc.org/github.com/TimeBye/go-harbor)
-[![Go Report Card](https://goreportcard.com/badge/github.com/TimeBye/go-harbor)](https://goreportcard.com/report/github.com/TimeBye/go-harbor)
-[![GitHub issues](https://img.shields.io/github/issues/TimeBye/go-harbor.svg)](https://github.com/TimeBye/go-harbor/issues)
 
 ## Coverage
 
@@ -47,7 +43,7 @@ opt := &ListProjectsOptions{Name: "haobor"}
 projects, _, err := harborClient.Projects.ListProjects(opt)
 ```
 
-For complete usage of go-gitlab, see the full [package docs](https://godoc.org/github.com/TimeBye/go-harbor).
+For complete usage of go-harbor, see the full [package docs](https://godoc.org/github.com/TimeBye/go-harbor).
 
 ## ToDo
 

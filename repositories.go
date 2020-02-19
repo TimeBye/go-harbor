@@ -106,6 +106,7 @@ type ListRepositoriesOption struct {
 	ListOptions
 	ProjectId int64  `url:"project_id,omitempty" json:"project_id,omitempty"`
 	Q         string `url:"q,omitempty" json:"q,omitempty"`
+	Sort      string `url:"sort,omitempty" json:"sort,omitempty"`
 }
 
 

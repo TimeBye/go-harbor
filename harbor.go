@@ -81,9 +81,9 @@ func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password, 
 func (c *Client) NewRequest(method, subPath string) *gorequest.SuperAgent {
 	var u string
 	if c.apiVersion == apiVersion {
-		u = c.baseURL.String() + "api/" + "v2.0" + subPath
+		u = c.baseURL.String() + "api/" + "v2.0/" + subPath
 	} else {
-		u = c.baseURL.String() + "api" + subPath
+		u = c.baseURL.String() + "api/" + subPath
 	}
 	h := c.client.Set("Accept", "application/json")
 	if c.UserAgent != "" {

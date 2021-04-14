@@ -11,9 +11,8 @@ type Artifact struct {
 }
 
 type ArtifactOption struct {
+	ListOptions
 	WithImmutableStatus string `json:"with_immutable_status" url:"with_immutable_status"`
-	Page                int32  `json:"page" url:"page"`
-	PageSize            int32  `json:"page_size" url:"page_size"`
 	WithLabel           bool   `json:"with_label" url:"with_label"`
 	WithScanOverview    bool   `json:"with_scan_overview" url:"with_scan_overview"`
 	WithSignature       bool   `json:"with_signature" url:"with_signature"`
@@ -34,7 +33,7 @@ func (as *ArtifactService) List(project string, repositories string, opt *Artifa
 	subPath := fmt.Sprintf("projects/%s/repositories/%s/artifacts", project, repositories)
 	resp, _, errs := as.client.
 		NewRequest(gorequest.GET, subPath).
-		Query(opt).
+		Query(*opt).
 		EndStruct(&artifacts)
 	return artifacts, &resp, errs
 }

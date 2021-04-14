@@ -12,11 +12,12 @@ type Artifact struct {
 
 type ArtifactOption struct {
 	ListOptions
-	WithImmutableStatus string `json:"with_immutable_status" url:"with_immutable_status"`
-	WithLabel           bool   `json:"with_label" url:"with_label"`
-	WithScanOverview    bool   `json:"with_scan_overview" url:"with_scan_overview"`
-	WithSignature       bool   `json:"with_signature" url:"with_signature"`
-	Q                   string `json:"q" url:"q"`
+	WithImmutableStatus string `json:"with_immutable_status,omitempty" url:"with_immutable_status,omitempty"`
+	WithLabel           bool   `json:"with_label,omitempty" url:"with_label,omitempty"`
+	WithScanOverview    bool   `json:"with_scan_overview,omitempty" url:"with_scan_overview"`
+	WithSignature       bool   `json:"with_signature,omitempty" url:"with_signature,omitempty"`
+	WithTag             bool   `json:"with_tag,omitempty" url:"with_tag,omitempty" `
+	Q                   string `json:"q,omitempty" url:"q,omitempty"`
 }
 
 //curl -X GET "http://harbor.cloud2go.cn/api/v2.0/projects/sdc/repositories/csd/artifacts?

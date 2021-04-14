@@ -2,6 +2,7 @@ package harbor
 
 import (
 	"fmt"
+	"github.com/goharbor/harbor/src/common/models"
 	"github.com/parnurzeal/gorequest"
 	"time"
 )
@@ -31,14 +32,7 @@ type RepoResp struct {
 
 // RepoRecord holds the record of an repository in DB, all the infors are from the registry notification event.
 type RepoRecord struct {
-	RepositoryID int64     `json:"repository_id"`
-	Name         string    `json:"name"`
-	ProjectID    int64     `json:"project_id"`
-	Description  string    `json:"description"`
-	PullCount    int64     `json:"pull_count"`
-	StarCount    int64     `json:"star_count"`
-	CreationTime time.Time `json:"creation_time"`
-	UpdateTime   time.Time `json:"update_time"`
+	*models.RepoRecord
 }
 
 type cfg struct {

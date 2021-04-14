@@ -26,8 +26,9 @@ type Client struct {
 	// User agent used when communicating with the GitLab API.
 	UserAgent string
 	// Services used for talking to different parts of the Harbor API.
-	Projects     *ProjectsService
-	Repositories *RepositoriesService
+	Projects        *ProjectsService
+	Repositories    *RepositoriesService
+	ArtifactService *ArtifactService
 }
 
 // ListOptions specifies the optional parameters to various List methods that
@@ -69,6 +70,9 @@ func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password, 
 	// Create all the public services.
 	c.Projects = &ProjectsService{client: c}
 	c.Repositories = &RepositoriesService{client: c}
+	c.ArtifactService = &ArtifactService{
+		client: c,
+	}
 	c.apiVersion = version
 	return c
 }
@@ -159,7 +163,7 @@ type StatisticMap struct {
 	TotalRepoCount int `json:"total_repo_count,omitempty"`
 }
 
-// Get projects number and repositories number relevant to the user
+//GetStatistics Get projects number and repositories number relevant to the user
 //
 //This endpoint is aimed to statistic all of the projects number
 // and repositories number relevant to the logined user,

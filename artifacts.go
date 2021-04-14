@@ -8,6 +8,8 @@ import (
 
 type Artifact struct {
 	artifact.Artifact
+	Tag          map[string]interface{} `json:"tag,omitempty"`
+	ScanOverview map[string]interface{} `json:"scan_overview,omitempty"`
 }
 
 type ArtifactOption struct {

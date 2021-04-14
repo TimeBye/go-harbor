@@ -11,13 +11,13 @@ type Artifact struct {
 }
 
 type ArtifactOption struct {
-	WithImmutableStatus string `json:"with_immutable_status"`
-	Page                int32  `json:"page"`
-	PageSize            int32  `json:"page_size"`
-	WithLabel           bool   `json:"with_label"`
-	WithScanOverview    bool   `json:"with_scan_overview"`
-	WithSignature       bool   `json:"with_signature"`
-	Q                   string `json:"q"`
+	WithImmutableStatus string `json:"with_immutable_status" url:"with_immutable_status"`
+	Page                int32  `json:"page" url:"page"`
+	PageSize            int32  `json:"page_size" url:"page_size"`
+	WithLabel           bool   `json:"with_label" url:"with_label"`
+	WithScanOverview    bool   `json:"with_scan_overview" url:"with_scan_overview"`
+	WithSignature       bool   `json:"with_signature" url:"with_signature"`
+	Q                   string `json:"q" url:"q"`
 }
 
 //curl -X GET "http://harbor.cloud2go.cn/api/v2.0/projects/sdc/repositories/csd/artifacts?

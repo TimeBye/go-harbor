@@ -1,9 +1,9 @@
 package harbor
 
 import (
-	"time"
-	"github.com/parnurzeal/gorequest"
 	"fmt"
+	"github.com/parnurzeal/gorequest"
+	"time"
 )
 
 // ProjectMetadata holds the metadata of a project.
@@ -58,7 +58,7 @@ type ListProjectsOptions struct {
 	Owner  string `url:"owner,omitempty" json:"owner,omitempty"`
 }
 
-// LogQueryParam is used to set query conditions when listing
+//ListLogOptions LogQueryParam is used to set query conditions when listing
 // access logs.
 type ListLogOptions struct {
 	ListOptions
@@ -83,7 +83,7 @@ type ProjectsService struct {
 	client *Client
 }
 
-// List projects
+//ListProject List projects
 //
 // This endpoint returns all projects created by Harbor,
 // and can be filtered by project name.
@@ -98,7 +98,7 @@ func (s *ProjectsService) ListProject(opt *ListProjectsOptions) ([]Project, *gor
 	return projects, &resp, errs
 }
 
-// Check if the project name user provided already exists.
+//CheckProject Check if the project name user provided already exists.
 //
 // This endpoint is used to check if the project name user provided already exist.
 //

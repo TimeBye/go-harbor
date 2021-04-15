@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	libraryVersion = "1.4.0"
+	libraryVersion = "2.0.0"
+	apiVersion     = "v2.0"
 	userAgent      = "go-harbor/" + libraryVersion
 )
 
@@ -18,11 +19,16 @@ type Client struct {
 	// set to a domain endpoint to use with a self hosted GitLab server. baseURL
 	// should always be specified with a trailing slash.
 	baseURL *url.URL
+	// apiVersion harbor API Version
+	// harbor version > 2.0.0  apiVersion = v2.0
+	// apiVersion = v1.0
+	apiVersion string
 	// User agent used when communicating with the GitLab API.
 	UserAgent string
 	// Services used for talking to different parts of the Harbor API.
-	Projects     *ProjectsService
-	Repositories *RepositoriesService
+	Projects        *ProjectsService
+	Repositories    *RepositoriesService
+	ArtifactService *ArtifactService
 }
 
 // ListOptions specifies the optional parameters to various List methods that
@@ -36,7 +42,7 @@ type ListOptions struct {
 }
 
 func NewClient(harborClient *gorequest.SuperAgent, baseURL, username, password string) *Client {
-	return newClient(harborClient, baseURL, username, password)
+	return newClient(harborClient, baseURL, username, password, apiVersion)
 }
 
 // SetBaseURL sets the base URL for API requests to a custom endpoint. urlStr
@@ -51,7 +57,7 @@ func (c *Client) SetBaseURL(urlStr string) error {
 	return err
 }
 
-func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password string) *Client {
+func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password, version string) *Client {
 	if harborClient == nil {
 		harborClient = gorequest.New()
 	}
@@ -64,6 +70,10 @@ func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password s
 	// Create all the public services.
 	c.Projects = &ProjectsService{client: c}
 	c.Repositories = &RepositoriesService{client: c}
+	c.ArtifactService = &ArtifactService{
+		client: c,
+	}
+	c.apiVersion = version
 	return c
 }
 
@@ -73,7 +83,12 @@ func newClient(harborClient *gorequest.SuperAgent, baseURL, username, password s
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
 func (c *Client) NewRequest(method, subPath string) *gorequest.SuperAgent {
-	u := c.baseURL.String() + "api/" + subPath
+	var u string
+	if c.apiVersion == apiVersion {
+		u = c.baseURL.String() + "api/" + "v2.0/" + subPath
+	} else {
+		u = c.baseURL.String() + "api/" + subPath
+	}
 	h := c.client.Set("Accept", "application/json")
 	if c.UserAgent != "" {
 		h.Set("User-Agent", c.UserAgent)
@@ -148,7 +163,7 @@ type StatisticMap struct {
 	TotalRepoCount int `json:"total_repo_count,omitempty"`
 }
 
-// Get projects number and repositories number relevant to the user
+//GetStatistics Get projects number and repositories number relevant to the user
 //
 //This endpoint is aimed to statistic all of the projects number
 // and repositories number relevant to the logined user,

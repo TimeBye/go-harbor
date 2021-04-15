@@ -1,20 +1,28 @@
 package harbor
 
 import (
-	"time"
-	"github.com/parnurzeal/gorequest"
 	"fmt"
+	"time"
+
+	"github.com/parnurzeal/gorequest"
 )
+
+type Report struct {
+	GeneratedAt     time.Time           `json:"generated_at"`
+	Vulnerabilities []VulnerabilityItem `json:"vulnerabilities"`
+	Severity        string              `json:"severity"`
+	Scanner         *ImgScanner         `json:"scanner,omitempty"`
+}
 
 // VulnerabilityItem is an item in the vulnerability result returned by vulnerability details API.
 type VulnerabilityItem struct {
-	ID          string `json:"id"`
-	Severity    int64  `json:"severity"`
-	Pkg         string `json:"package"`
-	Version     string `json:"version"`
-	Description string `json:"description"`
-	Link        string `json:"link"`
-	Fixed       string `json:"fixedVersion,omitempty"`
+	ID          string   `json:"id"`
+	Severity    string   `json:"severity"`
+	Pkg         string   `json:"package"`
+	Version     string   `json:"version"`
+	Description string   `json:"description"`
+	Link        []string `json:"link"`
+	FixVersion  string   `json:"fix_version,omitempty"`
 }
 
 type RepoResp struct {
@@ -59,16 +67,33 @@ type ComponentsOverviewEntry struct {
 
 //ImgScanOverview mapped to a record of image scan overview.
 type ImgScanOverview struct {
-	ID              int64               `json:"-"`
-	Digest          string              `json:"image_digest"`
-	Status          string              `json:"scan_status"`
-	JobID           int64               `json:"job_id"`
-	Sev             int                 `json:"severity"`
-	CompOverviewStr string              `json:"-"`
-	CompOverview    *ComponentsOverview `json:"components,omitempty"`
-	DetailsKey      string              `json:"details_key"`
-	CreationTime    time.Time           `json:"creation_time,omitempty"`
-	UpdateTime      time.Time           `json:"update_time,omitempty"`
+	ReportID  string          `json:"report_id"`
+	Status    string          `json:"scan_status"`
+	Severity  string          `json:"severity"`
+	Duration  int             `json:"duration"`
+	Summary   *ImgScanSummary `json:"summary,omitempty"`
+	StartTime time.Time       `json:"start_time,omitempty"`
+	EndTime   time.Time       `json:"end_time,omitempty"`
+	Scanner   *ImgScanner     `json:"scanner,omitempty"`
+}
+
+type ImgScanner struct {
+	Name    string `json:"name"`
+	Vendor  string `json:"vendor"`
+	Version string `json:"version"`
+}
+
+type ImgScanSummary struct {
+	Total   int             `json:"total"`
+	Fixable int             `json:"fixable"`
+	Details *ImgScanDetails `json:"summary,omitempty"`
+}
+
+type ImgScanDetails struct {
+	Critical int `json:"Critical"`
+	High     int `json:"High"`
+	Medium   int `json:"Medium"`
+	Low      int `json:"Low"`
 }
 
 type tagDetail struct {
@@ -90,8 +115,8 @@ type Signature struct {
 
 type TagResp struct {
 	tagDetail
-	Signature    *Signature       `json:"signature"`
-	ScanOverview *ImgScanOverview `json:"scan_overview,omitempty"`
+	Signature    *Signature                 `json:"signature"`
+	ScanOverview map[string]ImgScanOverview `json:"scan_overview,omitempty"`
 }
 
 // RepositoriesService handles communication with the user related methods of
@@ -108,7 +133,6 @@ type ListRepositoriesOption struct {
 	Q         string `url:"q,omitempty" json:"q,omitempty"`
 	Sort      string `url:"sort,omitempty" json:"sort,omitempty"`
 }
-
 
 type ManifestResp struct {
 	Manifest interface{} `json:"manifest"`
@@ -212,11 +236,11 @@ func (s *RepositoriesService) GetRepositoryTagManifests(repoName, tag string, ve
 	var v ManifestResp
 	resp, _, errs := s.client.
 		NewRequest(gorequest.GET, func() string {
-		if version == "" {
-			return fmt.Sprintf("repositories/%s/tags/%s/manifest", repoName, tag)
-		}
-		return fmt.Sprintf("repositories/%s/tags/%s/manifest?version=%s", repoName, tag, version)
-	}()).
+			if version == "" {
+				return fmt.Sprintf("repositories/%s/tags/%s/manifest", repoName, tag)
+			}
+			return fmt.Sprintf("repositories/%s/tags/%s/manifest?version=%s", repoName, tag, version)
+		}()).
 		EndStruct(&v)
 	return v, &resp, errs
 }
@@ -241,11 +265,12 @@ func (s *RepositoriesService) ScanImage(repoName, tag string) (*gorequest.Respon
 //
 // Harbor API docs: https://github.com/vmware/harbor/blob/release-1.4.0/docs/swagger.yaml#L1177
 func (s *RepositoriesService) GetImageDetails(repoName, tag string) ([]VulnerabilityItem, *gorequest.Response, []error) {
-	var v []VulnerabilityItem
+	var v map[string]Report
 	resp, _, errs := s.client.
-		NewRequest(gorequest.GET, fmt.Sprintf("repositories/%s/tags/%s/vulnerability/details", repoName, tag)).
+		NewRequest(gorequest.GET, fmt.Sprintf("repositories/%s/tags/%s/scan", repoName, tag)).
 		EndStruct(&v)
-	return v, &resp, errs
+
+	return v["application/vnd.scanner.adapter.vuln.report.harbor+json; version=1.0"].Vulnerabilities, &resp, errs
 }
 
 // Get signature information of a repository.
@@ -273,11 +298,11 @@ func (s *RepositoriesService) GetRepositoryTop(top interface{}) ([]RepoResp, *go
 	var v []RepoResp
 	resp, _, errs := s.client.
 		NewRequest(gorequest.GET, func() string {
-		if t, ok := top.(int); ok {
-			return fmt.Sprintf("repositories/top?count=%d", t)
-		}
-		return fmt.Sprintf("repositories/top")
-	}()).
+			if t, ok := top.(int); ok {
+				return fmt.Sprintf("repositories/top?count=%d", t)
+			}
+			return fmt.Sprintf("repositories/top")
+		}()).
 		EndStruct(&v)
 	return v, &resp, errs
 }

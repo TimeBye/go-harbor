@@ -17,6 +17,7 @@ limitations under the License.
 package flowcontrol
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -99,6 +100,10 @@ func (t *tokenBucketRateLimiter) QPS() float32 {
 }
 
 type fakeAlwaysRateLimiter struct{}
+
+func (t *fakeAlwaysRateLimiter) Wait(ctx context.Context) error {
+	panic("implement me")
+}
 
 func NewFakeAlwaysRateLimiter() RateLimiter {
 	return &fakeAlwaysRateLimiter{}

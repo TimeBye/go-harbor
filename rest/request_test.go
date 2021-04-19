@@ -16,7 +16,10 @@ See the License for the specific language governing permissions and
 package rest
 
 import (
+	"io/ioutil"
 	"net/url"
+	"os"
+	"reflect"
 	"testing"
 )
 
@@ -72,5 +75,58 @@ func TestRequestOrdersNamespaceInPath(t *testing.T) {
 	}).Name("bar").Resource("baz").Project("foo")
 	if s := r.URL().String(); s != "/test/projects/foo/baz/bar" {
 		t.Errorf("namespace should be in order in path: %s", s)
+	}
+}
+
+func TestRequestParam(t *testing.T) {
+	r := (&Request{}).Param("foo", "a")
+	if !reflect.DeepEqual(r.params, url.Values{"foo": []string{"a"}}) {
+		t.Errorf("should have set a param: %#v", r)
+	}
+
+	r.Param("bar", "1")
+	r.Param("bar", "2")
+	if !reflect.DeepEqual(r.params, url.Values{"foo": []string{"a"}, "bar": []string{"1", "2"}}) {
+		t.Errorf("should have set a param: %#v", r)
+	}
+}
+
+func TestRequestURI(t *testing.T) {
+	r := (&Request{}).Param("foo", "a")
+	r.Prefix("other")
+	r.RequestURI("/test?foo=b&a=b&c=1&c=2")
+	if r.pathPrefix != "/test" {
+		t.Errorf("path is wrong: %#v", r)
+	}
+	if !reflect.DeepEqual(r.params, url.Values{"a": []string{"b"}, "foo": []string{"b"}, "c": []string{"1", "2"}}) {
+		t.Errorf("should have set a param: %#v", r)
+	}
+}
+
+type NotAnAPIObject struct{}
+
+func TestRequestBody(t *testing.T) {
+	// test unknown type
+	r := (&Request{}).Body([]string{"test"})
+	if r.err == nil || r.body != nil {
+		t.Errorf("should have set err and left body nil: %#v", r)
+	}
+
+	// test error set when failing to read file
+	f, err := ioutil.TempFile("", "test")
+	if err != nil {
+		t.Fatalf("unable to create temp file")
+	}
+	defer f.Close()
+	os.Remove(f.Name())
+	r = (&Request{}).Body(f.Name())
+	if r.err == nil || r.body != nil {
+		t.Errorf("should have set err and left body nil: %#v", r)
+	}
+
+	// test unencodable api object
+	r = (&Request{}).Body(&NotAnAPIObject{})
+	if r.err == nil || r.body != nil {
+		t.Errorf("should have set err and left body nil: %#v", r)
 	}
 }

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 */
 
-package example
+package harbor
 
 import (
 	client2 "github.com/TimeBye/go-harbor/pkg/client"

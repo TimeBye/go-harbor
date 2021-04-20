@@ -17,11 +17,12 @@ package example
 
 import (
 	"fmt"
+	"github.com/TimeBye/go-harbor"
 	"github.com/TimeBye/go-harbor/pkg/model"
 )
 
 func Artifact(host, username, password string) error {
-	clientSet, err := NewClientSet(host, username, password)
+	clientSet, err := harbor.NewClientSet(host, username, password)
 	if err != nil {
 		return fmt.Errorf("get client set error:%v", err)
 	}

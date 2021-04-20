@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 package project
 
 import (
-	"github.com/TimeBye/go-harbor/rest"
+	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	"github.com/goharbor/harbor/src/common/models"
 )
 
@@ -28,15 +28,15 @@ type ProjectsInterface interface {
 
 // ProjectsV1Client is used to interact with features provided by the admissionregistration.k8s.io group.
 type ProjectsV1Client struct {
-	restClient rest.Interface
+	restClient rest2.Interface
 }
 
 func (p *ProjectsV1Client) Get(name string) (result *models.RepoRecord, err error) {
 	panic("implement me")
 }
 
-func NewProjectsV1Client(restClient *rest.Config) (*ProjectsV1Client, error) {
-	client, err := rest.RESTClientFor(restClient)
+func NewProjectsV1Client(restClient *rest2.Config) (*ProjectsV1Client, error) {
+	client, err := rest2.RESTClientFor(restClient)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (p *ProjectsV1Client) Repositories(project string) RepositoryInterface {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (p *ProjectsV1Client) RESTClient() rest.Interface {
+func (p *ProjectsV1Client) RESTClient() rest2.Interface {
 	if p == nil {
 		return nil
 	}

@@ -21,8 +21,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/TimeBye/go-harbor/rest/util/flowcontrol"
-	"github.com/goharbor/harbor/src/lib/errors"
+	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
 	"go/types"
 	"golang.org/x/net/http2"
 	"io"
@@ -95,7 +94,7 @@ type Request struct {
 	// This is only used for per-request timeouts, deadlines, and cancellations.
 	ctx context.Context
 
-	throttle flowcontrol.RateLimiter
+	throttle flowcontrol2.RateLimiter
 }
 
 // Result contains the result of calling Request.Do().
@@ -118,8 +117,10 @@ type ContentConfig struct {
 }
 
 // NewRequest creates a new request helper object for accessing runtime.Objects on a server.
-func NewRequest(client HTTPClient, verb string, baseURL *url.URL, versionedAPIPath string, content ContentConfig, throttle flowcontrol.RateLimiter, timeout time.Duration) *Request {
-
+func NewRequest(client HTTPClient, verb string, baseURL *url.URL, headers map[string]string, versionedAPIPath string, content ContentConfig, throttle flowcontrol2.RateLimiter, timeout time.Duration) *Request {
+	if headers == nil {
+		headers = make(map[string]string, 0)
+	}
 	pathPrefix := "/"
 	if baseURL != nil {
 		pathPrefix = path.Join(pathPrefix, baseURL.Path)
@@ -132,6 +133,9 @@ func NewRequest(client HTTPClient, verb string, baseURL *url.URL, versionedAPIPa
 		content:    content,
 		throttle:   throttle,
 		timeout:    timeout,
+	}
+	for k, v := range headers {
+		r.SetHeader(k, v)
 	}
 	switch {
 	case len(content.AcceptContentTypes) > 0:
@@ -587,13 +591,13 @@ func (r *Request) transformUnstructuredResponseError(resp *http.Response, req *h
 			body = data
 		}
 	}
-	retryAfter, _ := retryAfterSeconds(resp)
-	return r.newUnstructuredResponseError(body, isTextResponse(resp), resp.StatusCode, req.Method, retryAfter)
+	//retryAfter, _ := retryAfterSeconds(resp)
+	return r.newUnstructuredResponseError(body, resp.StatusCode, req)
 }
 
 // newUnstructuredResponseError instantiates the appropriate generic error for the provided input. It also logs the body.
-func (r *Request) newUnstructuredResponseError(body []byte, isTextResponse bool, statusCode int, method string, retryAfter int) error {
-	return errors.New(body)
+func (r *Request) newUnstructuredResponseError(body []byte, statusCode int, req *http.Request) error {
+	return fmt.Errorf("%s url:%s StatusCode: %d", req.Method, req.URL.Path, statusCode)
 }
 
 // transformResponse converts an API response into a structured API object
@@ -637,8 +641,8 @@ func (r *Request) transformResponse(resp *http.Response, req *http.Request) Resu
 	case resp.StatusCode < http.StatusOK || resp.StatusCode > http.StatusPartialContent:
 		// calculate an unstructured error from the response which the Result object may use if the caller
 		// did not return a structured error.
-		retryAfter, _ := retryAfterSeconds(resp)
-		err := r.newUnstructuredResponseError(body, isTextResponse(resp), resp.StatusCode, req.Method, retryAfter)
+		//retryAfter, _ := retryAfterSeconds(resp)
+		err := r.newUnstructuredResponseError(body, resp.StatusCode, req)
 		return Result{
 			body:        body,
 			contentType: contentType,
@@ -692,8 +696,96 @@ func truncateBody(body string) string {
 func (r Result) Into(obj interface{}) error {
 	if r.err != nil {
 		// Check whether the result has a Status object in the body and prefer that.
+		if r.contentType == "application/json; charset=utf-8" {
+			return fmt.Errorf("%v message:%s", r.err, string(r.body))
+		}
 		return r.err
 	}
+	return json.Unmarshal(r.body, obj)
+}
 
+func (r Result) Error() error {
+	if r.err != nil {
+		// Check whether the result has a Status object in the body and prefer that.
+		if r.contentType == "application/json; charset=utf-8" {
+			return fmt.Errorf("%v message:%s", r.err, string(r.body))
+		}
+		return r.err
+	}
 	return nil
+}
+
+func (r *Request) Params(o interface{}) *Request {
+	return r.Query(o)
+}
+
+func (r *Request) Query(content interface{}) *Request {
+	v := reflect.ValueOf(content)
+	switch v.Kind() {
+	case reflect.Ptr:
+		panic("pointers are not allowed")
+	case reflect.String:
+		r.queryString(v.String())
+	case reflect.Struct:
+		r.queryStruct(v.Interface())
+	case reflect.Map:
+		r.queryMap(v.Interface())
+	default:
+	}
+	return r
+}
+
+func (r *Request) queryString(content string) {
+	var val map[string]string
+	if err := json.Unmarshal([]byte(content), &val); err == nil {
+		for k, v := range val {
+			r.setParam(k, v)
+		}
+	} else {
+		if queryData, err := url.ParseQuery(content); err == nil {
+			for k, queryValues := range queryData {
+				for _, queryValue := range queryValues {
+					r.setParam(k, string(queryValue))
+				}
+			}
+		} else {
+			panic(err)
+		}
+		// TODO: need to check correct format of 'field=val&field=val&...'
+	}
+}
+
+func (r *Request) queryStruct(content interface{}) {
+	if marshalContent, err := json.Marshal(content); err != nil {
+		panic(err)
+	} else {
+		var val map[string]interface{}
+		if err := json.Unmarshal(marshalContent, &val); err != nil {
+			panic(err)
+		} else {
+			for k, v := range val {
+				k = strings.ToLower(k)
+				var queryVal string
+				switch t := v.(type) {
+				case string:
+					queryVal = t
+				case float64:
+					queryVal = strconv.FormatFloat(t, 'f', -1, 64)
+				case time.Time:
+					queryVal = t.Format(time.RFC3339)
+				default:
+					j, err := json.Marshal(v)
+					if err != nil {
+						continue
+					}
+					queryVal = string(j)
+				}
+				r.setParam(k, queryVal)
+			}
+		}
+	}
+}
+
+func (r *Request) queryMap(content interface{}) {
+	r.queryStruct(content)
 }

@@ -15,15 +15,30 @@ See the License for the specific language governing permissions and
 
 package eample
 
-import "testing"
+import (
+	"github.com/TimeBye/go-harbor/pkg/model"
+	"testing"
+)
 
 func TestNewClientSet(t *testing.T) {
-	clientSet, err := NewClientSet("harbor.cloud2go.cn")
+	clientSet, err := NewClientSet("harbor.cloud2go.cn", "admin", "Harbor12345")
 	if err != nil {
 		t.Errorf("get client set error:%v", err)
 	}
-	_, err = clientSet.ProjectV1Client.Repositories("xx").Get("xx")
-	if err != nil {
-		t.Errorf("get repositories set error:%+v", err)
+	result, err := clientSet.ProjectV1Client.Repositories("bitsensor").Get("elastalert")
+	if err != nil || len(result.Name) == 0 {
+		t.Error(err)
+	}
+	query := model.Query{
+		PageSize: 2,
+	}
+	result1, err := clientSet.ProjectV1Client.Repositories("cloudos").List(&query)
+	if err != nil || len(*result1) == 0 {
+		t.Error(err)
+	}
+
+	err = clientSet.ProjectV1Client.Repositories("cloudos").Delete("cloudos-next-allinone")
+	if err != nil || len(*result1) == 0 {
+		t.Error(err)
 	}
 }

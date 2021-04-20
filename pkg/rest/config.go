@@ -17,7 +17,9 @@ package rest
 
 import (
 	"context"
-	"github.com/TimeBye/go-harbor/rest/util/flowcontrol"
+	"encoding/base64"
+	"fmt"
+	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
 	"net"
 	"net/http"
 	"time"
@@ -58,9 +60,10 @@ type TLSClientConfig struct {
 }
 
 const (
-	DefaultQPS     float32 = 5.0
-	DefaultBurst   int     = 10
-	DefaultTimeOut int     = 10
+	DefaultQPS            float32 = 5.0
+	DefaultBurst          int     = 10
+	DefaultTimeOut        int     = 10
+	DefaultVersionApiPath string  = "/api/v2.0"
 )
 
 // Config holds the common attributes that can be passed to a Kubernetes client on
@@ -136,7 +139,7 @@ type Config struct {
 	Burst int
 
 	// Rate limiter for limiting connections to the master from this client. If present overwrites QPS/Burst
-	RateLimiter flowcontrol.RateLimiter
+	RateLimiter flowcontrol2.RateLimiter
 
 	// The maximum length of time to wait before giving up on a server request. A value of zero means no timeout.
 	Timeout time.Duration
@@ -180,12 +183,18 @@ func RESTClientFor(config *Config) (*RESTClient, error) {
 			httpClient.Timeout = config.Timeout
 		}
 	}
-
-	return NewRESTClient(baseURL, "v1", config.ContentConfig, qps, burst, config.RateLimiter, httpClient)
+	headers := map[string]string{}
+	if config.Username != "" && config.Password != "" {
+		pwd := fmt.Sprintf("%s:%s", config.Username, config.Password)
+		headers["authorization"] = fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(pwd)))
+	}
+	return NewRESTClient(baseURL, DefaultVersionApiPath, config.ContentConfig, headers, qps, burst, config.RateLimiter, httpClient)
 }
 
-func NewDefaultConfig(host string) *Config {
+func NewDefaultConfig(host string, username string, password string) *Config {
 	return &Config{
-		APIPath: host,
+		APIPath:  host,
+		Username: username,
+		Password: password,
 	}
 }

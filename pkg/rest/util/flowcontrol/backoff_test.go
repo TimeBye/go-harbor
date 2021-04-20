@@ -17,14 +17,14 @@ limitations under the License.
 package flowcontrol
 
 import (
-	"github.com/TimeBye/go-harbor/rest/util/clock"
+	clock2 "github.com/TimeBye/go-harbor/pkg/rest/util/clock"
 	"testing"
 	"time"
 )
 
 func TestSlowBackoff(t *testing.T) {
 	id := "_idSlow"
-	tc := clock.NewFakeClock(time.Now())
+	tc := clock2.NewFakeClock(time.Now())
 	step := time.Second
 	maxDuration := 50 * step
 
@@ -50,7 +50,7 @@ func TestSlowBackoff(t *testing.T) {
 
 func TestBackoffReset(t *testing.T) {
 	id := "_idReset"
-	tc := clock.NewFakeClock(time.Now())
+	tc := clock2.NewFakeClock(time.Now())
 	step := time.Second
 	maxDuration := step * 5
 	b := NewFakeBackOff(step, maxDuration, tc)
@@ -76,7 +76,7 @@ func TestBackoffReset(t *testing.T) {
 
 func TestBackoffHighWaterMark(t *testing.T) {
 	id := "_idHiWaterMark"
-	tc := clock.NewFakeClock(time.Now())
+	tc := clock2.NewFakeClock(time.Now())
 	step := time.Second
 	maxDuration := 5 * step
 	b := NewFakeBackOff(step, maxDuration, tc)
@@ -98,7 +98,7 @@ func TestBackoffHighWaterMark(t *testing.T) {
 
 func TestBackoffGC(t *testing.T) {
 	id := "_idGC"
-	tc := clock.NewFakeClock(time.Now())
+	tc := clock2.NewFakeClock(time.Now())
 	step := time.Second
 	maxDuration := 5 * step
 
@@ -126,7 +126,7 @@ func TestBackoffGC(t *testing.T) {
 
 func TestIsInBackOffSinceUpdate(t *testing.T) {
 	id := "_idIsInBackOffSinceUpdate"
-	tc := clock.NewFakeClock(time.Now())
+	tc := clock2.NewFakeClock(time.Now())
 	step := time.Second
 	maxDuration := 10 * step
 	b := NewFakeBackOff(step, maxDuration, tc)

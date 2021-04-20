@@ -17,32 +17,32 @@ package client
 
 import (
 	"fmt"
-	"github.com/TimeBye/go-harbor/project"
-	"github.com/TimeBye/go-harbor/rest"
-	"github.com/TimeBye/go-harbor/rest/util/flowcontrol"
+	project2 "github.com/TimeBye/go-harbor/pkg/project"
+	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
+	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
 )
 
 type Interface interface {
-	Project() project.ProjectsInterface
+	Project() project2.ProjectsInterface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
-	ProjectV1Client *project.ProjectsV1Client
+	ProjectV1Client *project2.ProjectsV1Client
 }
 
-func NewForConfig(c *rest.Config) (*Clientset, error) {
+func NewForConfig(c *rest2.Config) (*Clientset, error) {
 	configShallowCopy := *c
 	if configShallowCopy.RateLimiter == nil && configShallowCopy.QPS > 0 {
 		if configShallowCopy.Burst <= 0 {
 			return nil, fmt.Errorf("burst is required to be greater than 0 when RateLimiter is not set and QPS is set to greater than 0")
 		}
-		configShallowCopy.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(configShallowCopy.QPS, configShallowCopy.Burst)
+		configShallowCopy.RateLimiter = flowcontrol2.NewTokenBucketRateLimiter(configShallowCopy.QPS, configShallowCopy.Burst)
 	}
 	cs := &Clientset{}
 	var err error
-	cs.ProjectV1Client, err = project.NewProjectsV1Client(&configShallowCopy)
+	cs.ProjectV1Client, err = project2.NewProjectsV1Client(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}

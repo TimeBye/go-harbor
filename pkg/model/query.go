@@ -13,15 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 */
 
-package rest
+package model
 
-import "testing"
-
-func TestRESTClientFor(t *testing.T) {
-	config := NewDefaultConfig("harbor.cloud2go.cn")
-	rest, err := RESTClientFor(config)
-	if err != nil {
-		t.Errorf("get rest client :%v", rest)
-	}
-
+type Query struct {
+	PageSize int64  `json:"page_size,omitempty"`
+	Page     int64  `json:"page,omitempty"`
+	Q        string `json:"q,omitempty"`
 }

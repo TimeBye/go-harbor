@@ -16,19 +16,20 @@ See the License for the specific language governing permissions and
 package project
 
 import (
-	"github.com/TimeBye/go-harbor/rest"
+	"github.com/TimeBye/go-harbor/pkg/model"
+	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	"github.com/goharbor/harbor/src/common/models"
 )
 
 type RepositoryInterface interface {
-	//	List()
+	List(query *model.Query) (result *[]models.RepoRecord, err error)
 	Get(name string) (result *models.RepoRecord, err error)
+	Delete(name string) (err error)
 	//Put()
-	//Delete()
 }
 
 type repository struct {
-	client  rest.Interface
+	client  rest2.Interface
 	project string
 }
 
@@ -48,8 +49,28 @@ func (r *repository) Get(name string) (result *models.RepoRecord, err error) {
 		Project(r.project).
 		Resource("repositories").
 		Name(name).
-		//VersionedParams(&options, scheme.ParameterCodec).
 		Do().
 		Into(result)
+	return
+}
+
+func (r *repository) List(query *model.Query) (result *[]models.RepoRecord, err error) {
+	result = &[]models.RepoRecord{}
+	err = r.client.Get().
+		Project(r.project).
+		Resource("repositories").
+		Params(*query).
+		Do().
+		Into(result)
+	return
+}
+
+func (r *repository) Delete(name string) (err error) {
+	err = r.client.Delete().
+		Project(r.project).
+		Resource("repositories").
+		Name(name).
+		Do().
+		Error()
 	return
 }

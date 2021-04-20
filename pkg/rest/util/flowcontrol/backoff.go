@@ -17,8 +17,8 @@ limitations under the License.
 package flowcontrol
 
 import (
-	"github.com/TimeBye/go-harbor/rest/util/clock"
-	"github.com/TimeBye/go-harbor/rest/util/integer"
+	clock2 "github.com/TimeBye/go-harbor/pkg/rest/util/clock"
+	integer2 "github.com/TimeBye/go-harbor/pkg/rest/util/integer"
 	"sync"
 	"time"
 )
@@ -30,13 +30,13 @@ type backoffEntry struct {
 
 type Backoff struct {
 	sync.Mutex
-	Clock           clock.Clock
+	Clock           clock2.Clock
 	defaultDuration time.Duration
 	maxDuration     time.Duration
 	perItemBackoff  map[string]*backoffEntry
 }
 
-func NewFakeBackOff(initial, max time.Duration, tc *clock.FakeClock) *Backoff {
+func NewFakeBackOff(initial, max time.Duration, tc *clock2.FakeClock) *Backoff {
 	return &Backoff{
 		perItemBackoff:  map[string]*backoffEntry{},
 		Clock:           tc,
@@ -48,7 +48,7 @@ func NewFakeBackOff(initial, max time.Duration, tc *clock.FakeClock) *Backoff {
 func NewBackOff(initial, max time.Duration) *Backoff {
 	return &Backoff{
 		perItemBackoff:  map[string]*backoffEntry{},
-		Clock:           clock.RealClock{},
+		Clock:           clock2.RealClock{},
 		defaultDuration: initial,
 		maxDuration:     max,
 	}
@@ -75,7 +75,7 @@ func (p *Backoff) Next(id string, eventTime time.Time) {
 		entry = p.initEntryUnsafe(id)
 	} else {
 		delay := entry.backoff * 2 // exponential
-		entry.backoff = time.Duration(integer.Int64Min(int64(delay), int64(p.maxDuration)))
+		entry.backoff = time.Duration(integer2.Int64Min(int64(delay), int64(p.maxDuration)))
 	}
 	entry.lastUpdate = p.Clock.Now()
 }

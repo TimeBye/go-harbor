@@ -24,11 +24,11 @@ import (
 )
 
 func TestNewRequestSetsAccept(t *testing.T) {
-	r := NewRequest(nil, "get", &url.URL{Path: "/path/"}, "", ContentConfig{}, nil, 0)
+	r := NewRequest(nil, "get", &url.URL{Path: "/path/"}, nil, "", ContentConfig{}, nil, 0)
 	if r.headers.Get("Accept") != "" {
 		t.Errorf("unexpected headers: %#v", r.headers)
 	}
-	r = NewRequest(nil, "get", &url.URL{Path: "/path/"}, "", ContentConfig{ContentType: "application/other"}, nil, 0)
+	r = NewRequest(nil, "get", &url.URL{Path: "/path/"}, nil, "", ContentConfig{ContentType: "application/other"}, nil, 0)
 	if r.headers.Get("Accept") != "application/other, */*" {
 		t.Errorf("unexpected headers: %#v", r.headers)
 	}

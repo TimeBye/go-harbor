@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 package rest
 
 import (
-	"github.com/TimeBye/go-harbor/rest/util/flowcontrol"
+	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
 	"net/http"
 	"net/url"
 	"strings"
@@ -47,8 +47,8 @@ type RESTClient struct {
 	// contentConfig is the information used to communicate with the server.
 	contentConfig ContentConfig
 
-	Throttle flowcontrol.RateLimiter
-
+	Throttle flowcontrol2.RateLimiter
+	headers  map[string]string
 	// Set specific behavior of the client.  If not set http.DefaultClient will be used.
 	Client *http.Client
 }
@@ -64,7 +64,7 @@ func (c *RESTClient) Put() *Request {
 // NewRESTClient creates a new RESTClient. This client performs generic REST functions
 // such as Get, Put, Post, and Delete on specified paths.  Codec controls encoding and
 // decoding of responses from the server.
-func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ContentConfig, maxQPS float32, maxBurst int, rateLimiter flowcontrol.RateLimiter, client *http.Client) (*RESTClient, error) {
+func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ContentConfig, headers map[string]string, maxQPS float32, maxBurst int, rateLimiter flowcontrol2.RateLimiter, client *http.Client) (*RESTClient, error) {
 	base := *baseURL
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path += "/"
@@ -83,9 +83,9 @@ func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ContentConf
 			return nil, err
 		}*/
 
-	var throttle flowcontrol.RateLimiter
+	var throttle flowcontrol2.RateLimiter
 	if maxQPS > 0 && rateLimiter == nil {
-		throttle = flowcontrol.NewTokenBucketRateLimiter(maxQPS, maxBurst)
+		throttle = flowcontrol2.NewTokenBucketRateLimiter(maxQPS, maxBurst)
 	} else if rateLimiter != nil {
 		throttle = rateLimiter
 	}
@@ -94,6 +94,7 @@ func NewRESTClient(baseURL *url.URL, versionedAPIPath string, config ContentConf
 		versionedAPIPath: versionedAPIPath,
 		contentConfig:    config,
 		Throttle:         throttle,
+		headers:          headers,
 		Client:           client,
 	}, nil
 }
@@ -123,7 +124,7 @@ func (c *RESTClient) Delete() *Request {
 //
 func (c *RESTClient) Verb(verb string) *Request {
 	if c.Client == nil {
-		return NewRequest(nil, verb, c.base, c.versionedAPIPath, c.contentConfig, c.Throttle, 0)
+		return NewRequest(nil, verb, c.base, c.headers, c.versionedAPIPath, c.contentConfig, c.Throttle, 0)
 	}
-	return NewRequest(c.Client, verb, c.base, c.versionedAPIPath, c.contentConfig, c.Throttle, c.Client.Timeout)
+	return NewRequest(c.Client, verb, c.base, c.headers, c.versionedAPIPath, c.contentConfig, c.Throttle, c.Client.Timeout)
 }

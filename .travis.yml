@@ -1,0 +1,16 @@
+language: go
+
+go:
+- 1.15.5
+
+env:
+- GO111MODULE=auto
+
+script: go test -v ./...
+
+git:
+  depth: 1
+
+branches:
+  only:
+    - release-2.0.0

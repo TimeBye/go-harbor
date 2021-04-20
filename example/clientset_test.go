@@ -13,13 +13,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 */
 
-package eample
-
-import (
-	client2 "github.com/TimeBye/go-harbor/pkg/client"
-	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
-)
-
-func NewClientSet(host, username, password string) (clientSet *client2.Clientset, err error) {
-	return client2.NewForConfig(rest2.NewDefaultConfig(host, username, password))
-}
+package example

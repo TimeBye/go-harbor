@@ -78,6 +78,16 @@ func TestRequestOrdersNamespaceInPath(t *testing.T) {
 	}
 }
 
+func TestRequestOrdersNamespaceInPath1(t *testing.T) {
+	r := (&Request{
+		baseURL:    &url.URL{},
+		pathPrefix: "/test/",
+	}).Name("bar").Resource("baz").Project("foo").Suffix("/a")
+	if s := r.URL().String(); s != "/test/projects/foo/baz/bar/a" {
+		t.Errorf("namespace should be in order in path: %s", s)
+	}
+}
+
 func TestRequestParam(t *testing.T) {
 	r := (&Request{}).Param("foo", "a")
 	if !reflect.DeepEqual(r.params, url.Values{"foo": []string{"a"}}) {

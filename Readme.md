@@ -3,6 +3,7 @@
 A Harbor API client enabling Go programs to interact with Harbor in a simple and uniform way
 
 [![GitHub license](https://img.shields.io/github/license/TimeBye/go-harbor.svg)](https://github.com/TimeBye/go-harbor/blob/master/LICENSE)
+![travis](https://travis-ci.com/ClareChu/go-harbor.svg?branch=release-2.0.0)
 
 ## Coverage
 
@@ -12,6 +13,7 @@ to add new and/or missing endpoints. Currently the following services are suppor
 - [ ] Users
 - [x] Projects
 - [x] Repositories
+- [x] Artifacts
 - [ ] Jobs
 - [ ] Policies
 - [ ] Targets

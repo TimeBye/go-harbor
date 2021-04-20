@@ -16,6 +16,7 @@ See the License for the specific language governing permissions and
 package project
 
 import (
+	"github.com/TimeBye/go-harbor/pkg/model"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	"github.com/goharbor/harbor/src/common/models"
 )
@@ -31,8 +32,33 @@ type ProjectsV1Client struct {
 	restClient rest2.Interface
 }
 
-func (p *ProjectsV1Client) Get(name string) (result *models.RepoRecord, err error) {
-	panic("implement me")
+func (p *ProjectsV1Client) Get(name string) (result *models.Project, err error) {
+	result = &models.Project{}
+	err = p.restClient.Get().
+		Resource("projects").
+		Name(name).
+		Do().
+		Into(result)
+	return
+}
+
+func (p *ProjectsV1Client) List(query *model.Query) (results *[]models.Project, err error) {
+	results = &[]models.Project{}
+	err = p.restClient.List().
+		Resource("projects").
+		Params(*query).
+		Do().
+		Into(results)
+	return
+}
+
+func (p *ProjectsV1Client) Delete(name string) (err error) {
+	err = p.restClient.Delete().
+		Resource("projects").
+		Name(name).
+		Do().
+		Error()
+	return
 }
 
 func NewProjectsV1Client(restClient *rest2.Config) (*ProjectsV1Client, error) {

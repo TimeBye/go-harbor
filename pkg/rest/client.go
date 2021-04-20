@@ -27,6 +27,7 @@ type Interface interface {
 	Verb(verb string) *Request
 	Post() *Request
 	Put() *Request
+	List() *Request
 	Get() *Request
 	Delete() *Request
 }
@@ -51,6 +52,10 @@ type RESTClient struct {
 	headers  map[string]string
 	// Set specific behavior of the client.  If not set http.DefaultClient will be used.
 	Client *http.Client
+}
+
+func (c *RESTClient) List() *Request {
+	return c.Verb("GET")
 }
 
 func (c *RESTClient) Post() *Request {

@@ -16,66 +16,64 @@ See the License for the specific language governing permissions and
 package project
 
 import (
+	"fmt"
 	"github.com/TimeBye/go-harbor/pkg/model"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
-	"github.com/goharbor/harbor/src/common/models"
 )
 
-type RepositoryInterface interface {
-	Artifacts(repository string) *artifact
-	List(query *model.Query) (result *[]models.RepoRecord, err error)
-	Get(name string) (result *models.RepoRecord, err error)
+type ArtifactInterface interface {
+	Get(name string) (result *model.Artifact, err error)
 	Delete(name string) (err error)
-	//Put()
+	List(query *model.Query) (result *[]model.Artifact, err error)
 }
 
-type repository struct {
-	client  rest2.Interface
-	project string
+type artifact struct {
+	client     rest2.Interface
+	project    string
+	repository string
 }
 
-// newRepositories returns a ConfigMaps
-func newRepositories(
-	c *ProjectsV1Client,
-	project string) *repository {
-	return &repository{
-		client:  c.RESTClient(),
-		project: project,
+// newArtifacts returns a ConfigMaps
+func newArtifacts(rest rest2.Interface, project, repository string) *artifact {
+	return &artifact{
+		client:     rest,
+		project:    project,
+		repository: repository,
 	}
 }
 
-func (r *repository) Get(name string) (result *models.RepoRecord, err error) {
-	result = &models.RepoRecord{}
+func (r *artifact) Get(name string) (result *model.Artifact, err error) {
+	result = &model.Artifact{}
 	err = r.client.Get().
 		Project(r.project).
 		Resource("repositories").
-		Name(name).
+		Name(r.repository).
+		Suffix(fmt.Sprintf("/artifacts/%s", name)).
 		Do().
 		Into(result)
 	return
 }
 
-func (r *repository) List(query *model.Query) (result *[]models.RepoRecord, err error) {
-	result = &[]models.RepoRecord{}
+func (r *artifact) List(query *model.Query) (result *[]model.Artifact, err error) {
+	result = &[]model.Artifact{}
 	err = r.client.Get().
 		Project(r.project).
 		Resource("repositories").
+		Name(r.repository).
+		Suffix("/artifacts").
 		Params(*query).
 		Do().
 		Into(result)
 	return
 }
 
-func (r *repository) Delete(name string) (err error) {
+func (r *artifact) Delete(name string) (err error) {
 	err = r.client.Delete().
 		Project(r.project).
 		Resource("repositories").
-		Name(name).
+		Name(r.repository).
+		Suffix(fmt.Sprintf("/artifacts/%s", name)).
 		Do().
 		Error()
 	return
-}
-
-func (r *repository) Artifacts(repository string) *artifact {
-	return newArtifacts(r.client, r.project, repository)
 }

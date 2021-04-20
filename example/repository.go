@@ -13,34 +13,33 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 */
 
-package eample
+package example
 
-/*
 import (
+	"fmt"
 	"github.com/TimeBye/go-harbor/pkg/model"
-	"testing"
 )
 
-func TestNewClientSet(t *testing.T) {
-	clientSet, err := NewClientSet("harbor.cloud2go.cn", "admin", "Harbor12345")
+func Repositories(host, username, password string) error {
+	clientSet, err := NewClientSet(host, username, password)
 	if err != nil {
-		t.Errorf("get client set error:%v", err)
+		return fmt.Errorf("get client set error:%v", err)
 	}
-	result, err := clientSet.ProjectV1Client.Repositories("bitsensor").Get("elastalert")
+	result, err := clientSet.V2.Repositories("bitsensor").Get("elastalert")
 	if err != nil || len(result.Name) == 0 {
-		t.Error(err)
+		return fmt.Errorf("%v", err)
 	}
 	query := model.Query{
 		PageSize: 2,
 	}
-	result1, err := clientSet.ProjectV1Client.Repositories("cloudos").List(&query)
+	result1, err := clientSet.V2.Repositories("cloudos").List(&query)
 	if err != nil || len(*result1) == 0 {
-		t.Error(err)
+		return fmt.Errorf("%v", err)
 	}
 
-	err = clientSet.ProjectV1Client.Repositories("cloudos").Delete("cloudos-next-allinone")
+	err = clientSet.V2.Repositories("cloudos").Delete("cloudos-next-allinone")
 	if err != nil || len(*result1) == 0 {
-		t.Error(err)
+		return fmt.Errorf("%v", err)
 	}
+	return err
 }
-*/

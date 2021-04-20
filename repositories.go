@@ -1,9 +1,10 @@
 package harbor
 
 import (
-	"time"
-	"github.com/parnurzeal/gorequest"
 	"fmt"
+	"github.com/goharbor/harbor/src/common/models"
+	"github.com/parnurzeal/gorequest"
+	"time"
 )
 
 // VulnerabilityItem is an item in the vulnerability result returned by vulnerability details API.
@@ -31,14 +32,7 @@ type RepoResp struct {
 
 // RepoRecord holds the record of an repository in DB, all the infors are from the registry notification event.
 type RepoRecord struct {
-	RepositoryID int64     `json:"repository_id"`
-	Name         string    `json:"name"`
-	ProjectID    int64     `json:"project_id"`
-	Description  string    `json:"description"`
-	PullCount    int64     `json:"pull_count"`
-	StarCount    int64     `json:"star_count"`
-	CreationTime time.Time `json:"creation_time"`
-	UpdateTime   time.Time `json:"update_time"`
+	*models.RepoRecord
 }
 
 type cfg struct {
@@ -104,18 +98,18 @@ type RepositoriesService struct {
 
 type ListRepositoriesOption struct {
 	ListOptions
-	ProjectId int64  `url:"project_id,omitempty" json:"project_id,omitempty"`
-	Q         string `url:"q,omitempty" json:"q,omitempty"`
-	Sort      string `url:"sort,omitempty" json:"sort,omitempty"`
+	ProjectId   int64  `url:"project_id,omitempty" json:"project_id,omitempty"`
+	ProjectName string `url:"project_name,omitempty" json:"project_name,omitempty"`
+	Q           string `url:"q,omitempty" json:"q,omitempty"`
+	Sort        string `url:"sort,omitempty" json:"sort,omitempty"`
 }
-
 
 type ManifestResp struct {
 	Manifest interface{} `json:"manifest"`
 	Config   interface{} `json:"config,omitempty" `
 }
 
-// Get repositories accompany with relevant project and repo name.
+// ListRepository Get repositories accompany with relevant project and repo name.
 //
 // This endpoint let user search repositories accompanying
 // with relevant project ID and repo name.
@@ -124,7 +118,7 @@ type ManifestResp struct {
 func (s *RepositoriesService) ListRepository(opt *ListRepositoriesOption) ([]RepoRecord, *gorequest.Response, []error) {
 	var v []RepoRecord
 	resp, _, errs := s.client.
-		NewRequest(gorequest.GET, "repositories").
+		NewRequest(gorequest.GET, fmt.Sprintf("/projects/%s/repositories", opt.ProjectName)).
 		Query(*opt).
 		EndStruct(&v)
 	return v, &resp, errs
@@ -212,11 +206,11 @@ func (s *RepositoriesService) GetRepositoryTagManifests(repoName, tag string, ve
 	var v ManifestResp
 	resp, _, errs := s.client.
 		NewRequest(gorequest.GET, func() string {
-		if version == "" {
-			return fmt.Sprintf("repositories/%s/tags/%s/manifest", repoName, tag)
-		}
-		return fmt.Sprintf("repositories/%s/tags/%s/manifest?version=%s", repoName, tag, version)
-	}()).
+			if version == "" {
+				return fmt.Sprintf("repositories/%s/tags/%s/manifest", repoName, tag)
+			}
+			return fmt.Sprintf("repositories/%s/tags/%s/manifest?version=%s", repoName, tag, version)
+		}()).
 		EndStruct(&v)
 	return v, &resp, errs
 }
@@ -273,11 +267,11 @@ func (s *RepositoriesService) GetRepositoryTop(top interface{}) ([]RepoResp, *go
 	var v []RepoResp
 	resp, _, errs := s.client.
 		NewRequest(gorequest.GET, func() string {
-		if t, ok := top.(int); ok {
-			return fmt.Sprintf("repositories/top?count=%d", t)
-		}
-		return fmt.Sprintf("repositories/top")
-	}()).
+			if t, ok := top.(int); ok {
+				return fmt.Sprintf("repositories/top?count=%d", t)
+			}
+			return fmt.Sprintf("repositories/top")
+		}()).
 		EndStruct(&v)
 	return v, &resp, errs
 }

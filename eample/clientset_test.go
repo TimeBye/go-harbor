@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 
 package eample
 
+/*
 import (
 	"github.com/TimeBye/go-harbor/pkg/model"
 	"testing"
@@ -42,3 +43,4 @@ func TestNewClientSet(t *testing.T) {
 		t.Error(err)
 	}
 }
+*/

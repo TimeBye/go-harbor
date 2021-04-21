@@ -15,11 +15,9 @@ See the License for the specific language governing permissions and
 
 package example
 
-import "testing"
-
-func TestUsers(t *testing.T) {
+/*func TestUsers(t *testing.T) {
 	err := Users("xxx.xx.xx", "username", "password")
 	if err != nil {
 		t.Errorf("%v", err)
 	}
-}
+}*/

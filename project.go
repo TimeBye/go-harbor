@@ -251,7 +251,7 @@ type User struct {
 	Rolename     string    `json:"role_name"`
 	Role         int       `json:"role_id"`
 	RoleList     []Role    `json:"role_list"`
-	HasAdminRole int       `json:"has_admin_role"`
+	HasAdminRole int       `json:"has_username_role"`
 	ResetUUID    string    `json:"reset_uuid"`
 	Salt         string    `json:"-"`
 	CreationTime time.Time `json:"creation_time"`

@@ -22,7 +22,7 @@ type ArtifactOption struct {
 	Q                   string `json:"q,omitempty" url:"q,omitempty"`
 }
 
-//curl -X GET "http://harbor.cloud2go.cn/api/v2.0/projects/sdc/repositories/csd/artifacts?
+//curl -X GET "http://xxx.xx.xx/api/v2.0/projects/sdc/repositories/csd/artifacts?
 //q=csd&page=1&page_size=10&with_tag=true&with_label=true&with_scan_overview=true&with_signature=true&with_immutable_status=true"
 //-H "accept: application/json" -H "X-Request-Id: sdc" -H "X-Harbor-CSRF-Token: NttN0AYjQEIvqPw97JlFt0S8h81tFmrJBrP0IiU7omM4hNUUhhnZr5QRVLW4aZGHAhP8sRAmFb2aWubXfRFifQ=="
 

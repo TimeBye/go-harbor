@@ -4,6 +4,7 @@ A Harbor API client enabling Go programs to interact with Harbor in a simple and
 
 [![GitHub license](https://img.shields.io/github/license/TimeBye/go-harbor.svg)](https://github.com/TimeBye/go-harbor/blob/master/LICENSE)
 ![travis](https://travis-ci.com/ClareChu/go-harbor.svg?branch=release-2.0.0)
+[![codecov](https://codecov.io/gh/ClareChu/go-collection/branch/master/graph/badge.svg?token=zWaoCNi88E)](https://codecov.io/gh/ClareChu/go-collection)
 
 ## Coverage
 

@@ -17,7 +17,7 @@ package example
 
 /*
 func TestRepositories2(t *testing.T) {
-	err := Repositories("harbor.cloud2go.cn", "admin", "Harbor12345")
+	err := Repositories("xxx.xx.xx", "username", "password")
 	if err != nil {
 		t.Errorf("%v", err)
 	}

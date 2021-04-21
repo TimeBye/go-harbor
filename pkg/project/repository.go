@@ -36,7 +36,7 @@ type repository struct {
 
 // newRepositories returns a ConfigMaps
 func newRepositories(
-	c *ProjectsV1Client,
+	c *ProjectsV2Client,
 	project string) *repository {
 	return &repository{
 		client:  c.RESTClient(),

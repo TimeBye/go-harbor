@@ -219,7 +219,7 @@ func (s *RepositoriesService) GetRepositoryTagManifests(repoName, tag string, ve
 //
 // Trigger jobservice to call Clair API to scan the image
 // identified by the repo_name and tag.
-// Only project admins have permission to scan images under the project.
+// Only project usernames have permission to scan images under the project.
 //
 // Harbor API docs: https://github.com/vmware/harbor/blob/release-1.4.0/docs/swagger.yaml#L1113
 func (s *RepositoriesService) ScanImage(repoName, tag string) (*gorequest.Response, []error) {

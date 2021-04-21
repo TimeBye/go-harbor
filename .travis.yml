@@ -6,7 +6,7 @@ go:
 env:
 - GO111MODULE=auto
 
-script: go test -v ./... && bash <(curl -s https://codecov.io/bash) -t token
+script: go test -v ./...
 
 
 after_success:

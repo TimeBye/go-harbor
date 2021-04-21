@@ -6,7 +6,11 @@ go:
 env:
 - GO111MODULE=auto
 
-script: go test -v ./...
+script: go test -v ./... && bash <(curl -s https://codecov.io/bash) -t token
+
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
 git:
   depth: 1

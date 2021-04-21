@@ -15,11 +15,11 @@ See the License for the specific language governing permissions and
 
 package example
 
-/*
+import "testing"
+
 func TestArtifact(t *testing.T) {
-	err := Artifact("harbor.cloud2go.cn", "admin", "Harbor12345")
+	err := Artifact("xxx.xx.xx", "username", "password")
 	if err != nil {
 		t.Errorf("%v", err)
 	}
 }
-*/

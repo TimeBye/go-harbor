@@ -157,9 +157,9 @@ type StatisticMap struct {
 	PublicProjectCount int `json:"public_project_count,omitempty"`
 	// The count of the public repositories belonging to the public projects which the user is a member of.
 	PublicRepoCount int `json:"public_repo_count,omitempty"`
-	// The count of the total projects, only be seen when the is admin.
+	// The count of the total projects, only be seen when the is username.
 	TotalProjectCount int `json:"total_project_count,omitempty"`
-	// The count of the total repositories, only be seen when the user is admin.
+	// The count of the total repositories, only be seen when the user is username.
 	TotalRepoCount int `json:"total_repo_count,omitempty"`
 }
 
@@ -168,7 +168,7 @@ type StatisticMap struct {
 //This endpoint is aimed to statistic all of the projects number
 // and repositories number relevant to the logined user,
 // also the public projects number and repositories number.
-// If the user is admin,
+// If the user is username,
 // he can also get total projects number and total repositories number.
 //
 // Harbor API docs: https://github.com/vmware/harbor/blob/release-1.4.0/docs/swagger.yaml#L631

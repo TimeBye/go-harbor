@@ -20,6 +20,7 @@ import (
 	project2 "github.com/TimeBye/go-harbor/pkg/project"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
+	"github.com/TimeBye/go-harbor/pkg/user"
 )
 
 type Interface interface {
@@ -29,7 +30,8 @@ type Interface interface {
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
-	V2 *project2.ProjectsV1Client
+	V2   *project2.ProjectsV2Client
+	User *user.UsersClient
 }
 
 func NewForConfig(c *rest2.Config) (*Clientset, error) {
@@ -43,6 +45,10 @@ func NewForConfig(c *rest2.Config) (*Clientset, error) {
 	cs := &Clientset{}
 	var err error
 	cs.V2, err = project2.NewProjectsV1Client(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.User, err = user.NewUsersClient(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}

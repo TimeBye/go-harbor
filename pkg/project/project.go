@@ -27,12 +27,12 @@ type ProjectsInterface interface {
 	RepositoryInterface
 }
 
-// ProjectsV1Client is used to interact with features provided by the admissionregistration.k8s.io group.
-type ProjectsV1Client struct {
+// ProjectsV2Client is used to interact with features provided by the admissionregistration.k8s.io group.
+type ProjectsV2Client struct {
 	restClient rest2.Interface
 }
 
-func (p *ProjectsV1Client) Get(name string) (result *models.Project, err error) {
+func (p *ProjectsV2Client) Get(name string) (result *models.Project, err error) {
 	result = &models.Project{}
 	err = p.restClient.Get().
 		Resource("projects").
@@ -42,7 +42,7 @@ func (p *ProjectsV1Client) Get(name string) (result *models.Project, err error) 
 	return
 }
 
-func (p *ProjectsV1Client) List(query *model.Query) (results *[]models.Project, err error) {
+func (p *ProjectsV2Client) List(query *model.Query) (results *[]models.Project, err error) {
 	results = &[]models.Project{}
 	err = p.restClient.List().
 		Resource("projects").
@@ -52,7 +52,7 @@ func (p *ProjectsV1Client) List(query *model.Query) (results *[]models.Project, 
 	return
 }
 
-func (p *ProjectsV1Client) Delete(name string) (err error) {
+func (p *ProjectsV2Client) Delete(name string) (err error) {
 	err = p.restClient.Delete().
 		Resource("projects").
 		Name(name).
@@ -61,21 +61,21 @@ func (p *ProjectsV1Client) Delete(name string) (err error) {
 	return
 }
 
-func NewProjectsV1Client(restClient *rest2.Config) (*ProjectsV1Client, error) {
+func NewProjectsV1Client(restClient *rest2.Config) (*ProjectsV2Client, error) {
 	client, err := rest2.RESTClientFor(restClient)
 	if err != nil {
 		return nil, err
 	}
-	return &ProjectsV1Client{restClient: client}, nil
+	return &ProjectsV2Client{restClient: client}, nil
 }
 
-func (p *ProjectsV1Client) Repositories(project string) RepositoryInterface {
+func (p *ProjectsV2Client) Repositories(project string) RepositoryInterface {
 	return newRepositories(p, project)
 }
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (p *ProjectsV1Client) RESTClient() rest2.Interface {
+func (p *ProjectsV2Client) RESTClient() rest2.Interface {
 	if p == nil {
 		return nil
 	}

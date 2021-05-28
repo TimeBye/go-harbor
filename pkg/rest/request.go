@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"fmt"
 	flowcontrol2 "github.com/TimeBye/go-harbor/pkg/rest/util/flowcontrol"
-	"go/types"
 	"golang.org/x/net/http2"
 	"io"
 	"io/ioutil"
@@ -221,10 +220,7 @@ func (r *Request) Body(obj interface{}) *Request {
 		r.body = bytes.NewReader(t)
 	case io.Reader:
 		r.body = t
-	case types.Struct:
-		if reflect.ValueOf(t).IsNil() {
-			return r
-		}
+	case interface{}:
 		data, _ := json.Marshal(t)
 		r.body = bytes.NewReader(data)
 		r.SetHeader("Content-Type", r.content.ContentType)

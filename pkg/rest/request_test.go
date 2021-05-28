@@ -118,7 +118,8 @@ type NotAnAPIObject struct{}
 func TestRequestBody(t *testing.T) {
 	// test unknown type
 	r := (&Request{}).Body([]string{"test"})
-	if r.err == nil || r.body != nil {
+	//todo You can enter any string if the test case needs to be changed
+	if r.err != nil || r.body == nil {
 		t.Errorf("should have set err and left body nil: %#v", r)
 	}
 
@@ -136,7 +137,7 @@ func TestRequestBody(t *testing.T) {
 
 	// test unencodable api object
 	r = (&Request{}).Body(&NotAnAPIObject{})
-	if r.err == nil || r.body != nil {
+	if r.err != nil || r.body == nil {
 		t.Errorf("should have set err and left body nil: %#v", r)
 	}
 }

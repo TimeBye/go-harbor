@@ -228,6 +228,10 @@ func (r *Request) Body(obj interface{}) *Request {
 		data, _ := json.Marshal(t)
 		r.body = bytes.NewReader(data)
 		r.SetHeader("Content-Type", r.content.ContentType)
+	case interface{}:
+		data, _ := json.Marshal(t)
+		r.body = bytes.NewReader(data)
+		r.SetHeader("Content-Type", r.content.ContentType)
 		/*	case runtime.Object:
 			// callers may pass typed interface pointers, therefore we must check nil with reflection
 			if reflect.ValueOf(t).IsNil() {

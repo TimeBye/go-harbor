@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/TimeBye/go-harbor"
 	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 )
 
 func Project(host, username, password string) error {
@@ -30,10 +31,15 @@ func Project(host, username, password string) error {
 	if err != nil || len(result.Name) == 0 {
 		return fmt.Errorf("%v", err)
 	}
-	query := model.Query{
-		PageSize: 2,
+
+	query := &options.ProjectsListOptions{
+		Query: &model.Query{
+			PageSize: 2,
+			Q:        "name=aa",
+		},
+		Name: "aa1",
 	}
-	result1, err := clientSet.V2.List(&query)
+	result1, err := clientSet.V2.List(query)
 	if err != nil || len(*result1) == 0 {
 		return fmt.Errorf("%v", err)
 	}

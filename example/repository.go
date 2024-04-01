@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/TimeBye/go-harbor"
 	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 )
 
 func Repositories(host, username, password string) error {
@@ -30,8 +31,11 @@ func Repositories(host, username, password string) error {
 	if err != nil || len(result.Name) == 0 {
 		return fmt.Errorf("%v", err)
 	}
-	query := model.Query{
-		PageSize: 2,
+	query := options.RepositoriesListOptions{
+		Query: &model.Query{
+			PageSize: 2,
+			Q:        "name=aa",
+		},
 	}
 	result1, err := clientSet.V2.Repositories("cloudos").List(&query)
 	if err != nil || len(*result1) == 0 {

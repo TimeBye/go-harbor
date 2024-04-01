@@ -18,13 +18,14 @@ package project
 import (
 	"fmt"
 	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 )
 
 type ArtifactInterface interface {
 	Get(name string) (result *model.Artifact, err error)
 	Delete(name string) (err error)
-	List(query *model.Query) (result *[]model.Artifact, err error)
+	List(query *options.ArtifactsListOptions) (result *[]model.Artifact, err error)
 }
 
 type artifact struct {
@@ -54,7 +55,7 @@ func (r *artifact) Get(name string) (result *model.Artifact, err error) {
 	return
 }
 
-func (r *artifact) List(query *model.Query) (result *[]model.Artifact, err error) {
+func (r *artifact) List(query *options.ArtifactsListOptions) (result *[]model.Artifact, err error) {
 	result = &[]model.Artifact{}
 	err = r.client.Get().
 		Project(r.project).

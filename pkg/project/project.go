@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 package project
 
 import (
-	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	"github.com/goharbor/harbor/src/common/models"
 )
@@ -42,7 +42,7 @@ func (p *ProjectsV2Client) Get(name string) (result *models.Project, err error) 
 	return
 }
 
-func (p *ProjectsV2Client) List(query *model.Query) (results *[]models.Project, err error) {
+func (p *ProjectsV2Client) List(query *options.ProjectsListOptions) (results *[]models.Project, err error) {
 	results = &[]models.Project{}
 	err = p.restClient.List().
 		Resource("projects").

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/TimeBye/go-harbor"
 	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 )
 
 func Artifact(host, username, password string) error {
@@ -26,7 +27,12 @@ func Artifact(host, username, password string) error {
 	if err != nil {
 		return fmt.Errorf("get client set error:%v", err)
 	}
-	query := model.Query{}
+	query := options.ArtifactsListOptions{
+		Query: &model.Query{
+			PageSize: 2,
+			Q:        "name=aa",
+		},
+	}
 	results, err := clientSet.V2.Repositories("appsmith").Artifacts("appsmith-editor").List(&query)
 	if err != nil || len(*results) == 0 {
 		return fmt.Errorf("%v", err)

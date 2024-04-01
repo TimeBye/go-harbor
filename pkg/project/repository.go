@@ -16,14 +16,14 @@ See the License for the specific language governing permissions and
 package project
 
 import (
-	"github.com/TimeBye/go-harbor/pkg/model"
+	"github.com/TimeBye/go-harbor/pkg/project/options"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
 	"github.com/goharbor/harbor/src/common/models"
 )
 
 type RepositoryInterface interface {
 	Artifacts(repository string) *artifact
-	List(query *model.Query) (result *[]models.RepoRecord, err error)
+	List(query *options.RepositoriesListOptions) (result *[]models.RepoRecord, err error)
 	Get(name string) (result *models.RepoRecord, err error)
 	Delete(name string) (err error)
 	//Put()
@@ -55,7 +55,7 @@ func (r *repository) Get(name string) (result *models.RepoRecord, err error) {
 	return
 }
 
-func (r *repository) List(query *model.Query) (result *[]models.RepoRecord, err error) {
+func (r *repository) List(query *options.RepositoriesListOptions) (result *[]models.RepoRecord, err error) {
 	result = &[]models.RepoRecord{}
 	err = r.client.Get().
 		Project(r.project).

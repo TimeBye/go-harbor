@@ -58,7 +58,7 @@ harborClient, err := harbor.NewClientSet("host", "username", "password")
 if err != nil {
     panic(err)
 }
-query := model.Query{}
+query := options.ProjectsListOptions{}
 projects, err := harborClient.V2.List(&query)
 ```
 

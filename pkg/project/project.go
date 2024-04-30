@@ -18,7 +18,7 @@ package project
 import (
 	"github.com/TimeBye/go-harbor/pkg/project/options"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
-	"github.com/goharbor/harbor/src/common/models"
+	"github.com/goharbor/harbor/src/pkg/project/models"
 )
 
 // ProjectsInterface holds the methods that discover server-supported API groups,

@@ -2,7 +2,7 @@ package harbor
 
 import (
 	"fmt"
-	"github.com/goharbor/harbor/src/common/models"
+	"github.com/TimeBye/go-harbor/pkg/model"
 	"github.com/parnurzeal/gorequest"
 	"time"
 )
@@ -30,28 +30,23 @@ type RepoResp struct {
 	UpdateTime   time.Time `json:"update_time"`
 }
 
-// RepoRecord holds the record of an repository in DB, all the infors are from the registry notification event.
-type RepoRecord struct {
-	*models.RepoRecord
-}
-
 type cfg struct {
 	Labels map[string]string `json:"labels"`
 }
 
-//ComponentsOverview has the total number and a list of components number of different serverity level.
+// ComponentsOverview has the total number and a list of components number of different serverity level.
 type ComponentsOverview struct {
 	Total   int                        `json:"total"`
 	Summary []*ComponentsOverviewEntry `json:"summary"`
 }
 
-//ComponentsOverviewEntry ...
+// ComponentsOverviewEntry ...
 type ComponentsOverviewEntry struct {
 	Sev   int `json:"severity"`
 	Count int `json:"count"`
 }
 
-//ImgScanOverview mapped to a record of image scan overview.
+// ImgScanOverview mapped to a record of image scan overview.
 type ImgScanOverview struct {
 	ID              int64               `json:"-"`
 	Digest          string              `json:"image_digest"`
@@ -115,8 +110,8 @@ type ManifestResp struct {
 // with relevant project ID and repo name.
 //
 // Harbor API docs: https://github.com/vmware/harbor/blob/release-1.4.0/docs/swagger.yaml#L892
-func (s *RepositoriesService) ListRepository(opt *ListRepositoriesOption) ([]RepoRecord, *gorequest.Response, []error) {
-	var v []RepoRecord
+func (s *RepositoriesService) ListRepository(opt *ListRepositoriesOption) ([]model.Repository, *gorequest.Response, []error) {
+	var v []model.Repository
 	resp, _, errs := s.client.
 		NewRequest(gorequest.GET, fmt.Sprintf("/projects/%s/repositories", opt.ProjectName)).
 		Query(*opt).

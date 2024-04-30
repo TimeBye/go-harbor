@@ -16,20 +16,20 @@ See the License for the specific language governing permissions and
 package project
 
 import (
+	"github.com/TimeBye/go-harbor/pkg/model"
 	"github.com/TimeBye/go-harbor/pkg/project/options"
 	rest2 "github.com/TimeBye/go-harbor/pkg/rest"
-	"github.com/goharbor/harbor/src/common/models"
 )
 
 type RepositoryInterface interface {
-	Artifacts(repository string) *artifact
-	List(query *options.RepositoriesListOptions) (result *[]models.RepoRecord, err error)
-	Get(name string) (result *models.RepoRecord, err error)
+	Artifacts(Repository string) *artifact
+	List(query *options.RepositoriesListOptions) (result *[]model.Repository, err error)
+	Get(name string) (result *model.Repository, err error)
 	Delete(name string) (err error)
 	//Put()
 }
 
-type repository struct {
+type Repository struct {
 	client  rest2.Interface
 	project string
 }
@@ -37,15 +37,15 @@ type repository struct {
 // newRepositories returns a ConfigMaps
 func newRepositories(
 	c *ProjectsV2Client,
-	project string) *repository {
-	return &repository{
+	project string) *Repository {
+	return &Repository{
 		client:  c.RESTClient(),
 		project: project,
 	}
 }
 
-func (r *repository) Get(name string) (result *models.RepoRecord, err error) {
-	result = &models.RepoRecord{}
+func (r *Repository) Get(name string) (result *model.Repository, err error) {
+	result = &model.Repository{}
 	err = r.client.Get().
 		Project(r.project).
 		Resource("repositories").
@@ -55,8 +55,8 @@ func (r *repository) Get(name string) (result *models.RepoRecord, err error) {
 	return
 }
 
-func (r *repository) List(query *options.RepositoriesListOptions) (result *[]models.RepoRecord, err error) {
-	result = &[]models.RepoRecord{}
+func (r *Repository) List(query *options.RepositoriesListOptions) (result *[]model.Repository, err error) {
+	result = &[]model.Repository{}
 	err = r.client.Get().
 		Project(r.project).
 		Resource("repositories").
@@ -66,7 +66,7 @@ func (r *repository) List(query *options.RepositoriesListOptions) (result *[]mod
 	return
 }
 
-func (r *repository) Delete(name string) (err error) {
+func (r *Repository) Delete(name string) (err error) {
 	err = r.client.Delete().
 		Project(r.project).
 		Resource("repositories").
@@ -76,6 +76,6 @@ func (r *repository) Delete(name string) (err error) {
 	return
 }
 
-func (r *repository) Artifacts(repository string) *artifact {
-	return newArtifacts(r.client, r.project, repository)
+func (r *Repository) Artifacts(Repository string) *artifact {
+	return newArtifacts(r.client, r.project, Repository)
 }

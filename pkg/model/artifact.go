@@ -16,9 +16,9 @@ See the License for the specific language governing permissions and
 package model
 
 import (
-	cmodels "github.com/goharbor/harbor/src/common/models"
-	"github.com/goharbor/harbor/src/controller/tag"
 	"github.com/goharbor/harbor/src/pkg/artifact"
+	cmodels "github.com/goharbor/harbor/src/pkg/label/model"
+	"github.com/goharbor/harbor/src/pkg/tag/model/tag"
 )
 
 type Artifact struct {
